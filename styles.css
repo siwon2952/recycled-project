@@ -1,0 +1,102 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f4f4f9;
+}
+
+.screen {
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    text-align: center;
+    display: none; /* 기본적으로 모든 화면은 숨김 */
+}
+
+.screen.active {
+    display: block; /* 현재 활성화된 화면만 표시 */
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.big-button {
+    background-color: #4CAF50; /* 수거 버튼은 초록색 */
+    color: white;
+    font-size: 24px;
+    padding: 25px;
+    margin-bottom: 50px;
+}
+
+.medium-button {
+    background-color: #007bff; /* 관리자 메뉴 버튼은 파란색 */
+    color: white;
+}
+
+.small-button {
+    background-color: #6c757d; /* 종료/복귀 버튼은 회색 */
+    color: white;
+    padding: 10px;
+    font-size: 14px;
+    width: auto;
+    max-width: 150px;
+    display: inline-block;
+}
+
+.exit-button {
+    margin-top: 30px;
+    background-color: #dc3545; /* 종료 버튼은 붉은색 */
+}
+
+.status-message {
+    color: #4CAF50;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.info-text {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 50px;
+}
+
+.click-to-continue {
+    font-size: 14px;
+    color: #999;
+}
+
+/* 재고 상황 테이블 스타일 */
+#stockTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#stockTable th, #stockTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#stockTable th {
+    background-color: #f2f2f2;
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>재활용 그릇 관리 시스템 (프로토타입)</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="mainMenu" class="screen active">
+        <h1>메인 메뉴</h1>
+        <button id="btnCollect" class="big-button">수거</button>
+        <button id="btnAdmin" class="small-button">관리자</button>
+    </div>
+
+    <div id="collectQR" class="screen">
+        <h1>수거 QR 인식</h1>
+        <p>QR을 스캔할 준비가 되셨나요?</p>
+        <button id="btnScanCollect" class="medium-button">QR 버튼 (스캔)</button>
+        <button id="btnExitCollect" class="small-button exit-button">종료</button>
+    </div>
+
+    <div id="collectComplete" class="screen">
+        <h1 class="status-message">수거 완료했습니다.</h1>
+        <p class="info-text">QR 정보: [가상] 종류 A, 지역 B</p>
+        <p class="click-to-continue">(화면 아무 곳이나 클릭/터치하여 계속)</p>
+    </div>
+
+    <div id="adminMenu" class="screen">
+        <h1>관리자 메뉴</h1>
+        <button id="btnAdminIn" class="medium-button">입고</button>
+        <button id="btnAdminOut" class="medium-button">출고</button>
+        <button id="btnAdminStock" class="medium-button">재고 상황</button>
+        <button id="btnExitAdminMenu" class="small-button exit-button">메인으로</button>
+    </div>
+
+    <div id="inboundQR" class="screen">
+        <h1>입고 QR 인식</h1>
+        <p>QR을 스캔할 준비가 되셨나요?</p>
+        <button id="btnScanIn" class="medium-button">QR 버튼 (스캔)</button>
+        <button id="btnExitIn" class="small-button exit-button">종료</button>
+    </div>
+
+    <div id="inboundComplete" class="screen">
+        <h1 class="status-message">입고 완료했습니다.</h1>
+        <p class="info-text">QR 정보: [가상] 종류 C, 지역 D</p>
+        <p class="click-to-continue">(화면 아무 곳이나 클릭/터치하여 계속)</p>
+    </div>
+
+    <div id="outboundQR" class="screen">
+        <h1>출고 QR 인식</h1>
+        <p>QR을 스캔할 준비가 되셨나요?</p>
+        <button id="btnScanOut" class="medium-button">QR 버튼 (스캔)</button>
+        <button id="btnExitOut" class="small-button exit-button">종료</button>
+    </div>
+
+    <div id="outboundComplete" class="screen">
+        <h1 class="status-message">출고 완료했습니다.</h1>
+        <p class="info-text">QR 정보: [가상] 종류 E, 지역 F</p>
+        <p class="click-to-continue">(화면 아무 곳이나 클릭/터치하여 계속)</p>
+    </div>
+
+    <div id="stockStatus" class="screen">
+        <h1>재고 상황</h1>
+        <p>실시간 재고 상황 (가상 데이터)</p>
+        <table id="stockTable">
+            <thead>
+                <tr>
+                    <th>지역</th>
+                    <th>종류</th>
+                    <th>상태</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+        <button id="btnExitStock" class="small-button exit-button">관리자 메뉴로</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
