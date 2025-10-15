@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>재활용 그릇 관리 시스템 (프로토타입)</title>
     <link rel="stylesheet" href="styles.css">
+    
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    
 </head>
 <body>
 
@@ -16,8 +19,12 @@
 
     <div id="collectQR" class="screen">
         <h1>수거 QR 인식</h1>
-        <p>QR을 스캔할 준비가 되셨나요?</p>
-        <button id="btnScanCollect" class="medium-button">QR 버튼 (스캔)</button>
+        
+        <div id="reader" style="width: 100%; max-width: 350px; margin: 20px auto;"></div>
+        
+        <p id="scan-message">카메라를 켜고 QR 코드를 스캔해주세요.</p>
+        
+        <button id="btnStartScanCollect" class="medium-button">카메라 켜기/스캔 시작</button>
         <button id="btnExitCollect" class="small-button exit-button">종료</button>
     </div>
 
