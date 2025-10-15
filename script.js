@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. 수거 QR 인식 화면 (collectQR) - 카메라 기능 추가
     // '카메라 켜기/스캔 시작' 버튼
     document.getElementById('btnStartScanCollect').addEventListener('click', () => {
-        startQrScanner('reader', 'collectComplete');
+        startQrScanner('reader', 'collectComplete', '수거', 'scan-message');
     });
 
     // '종료' 버튼 (스캐너 정지 로직 포함)
@@ -72,40 +72,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 5. 입고 QR 인식 화면 (inboundQR)
-    document.getElementById('btnScanIn').addEventListener('click', () => {
-        console.log("입고 QR 스캔 시도...");
-        // DB 업데이트 로직 (프로토타입에서는 가상으로 추가)
-        stockData.push({ id: stockData.length + 1, region: "신규", type: "미확인", status: "입고" }); 
-        
-        switchScreen('inboundComplete');
-    });
-    
-    document.getElementById('btnExitIn').addEventListener('click', () => {
-        switchScreen('adminMenu');
-    });
+document.getElementById('btnStartScanIn').addEventListener('click', () => {
+    // '입고' 상태, 'scan-message-in' 영역 지정
+    startQrScanner('readerInbound', 'inboundComplete', '입고', 'scan-message-in');
+});
 
-    // 6. 입고 완료 확인 화면 (inboundComplete) - 클릭/터치 시 입고 QR 인식 화면으로 복귀
-    document.getElementById('inboundComplete').addEventListener('click', () => {
-        switchScreen('inboundQR');
-    });
+// '종료' 버튼 (스캐너 정지 로직 포함)
+document.getElementById('btnExitIn').addEventListener('click', () => {
+    stopQrScanner();
+    switchScreen('adminMenu');
+});
 
-    // 7. 출고 QR 인식 화면 (outboundQR)
-    document.getElementById('btnScanOut').addEventListener('click', () => {
-        console.log("출고 QR 스캔 시도...");
-        // DB 업데이트 로직 (프로토타입에서는 가상으로 추가)
-        stockData.push({ id: stockData.length + 1, region: "신규", type: "미확인", status: "출고" }); 
-        
-        switchScreen('outboundComplete');
-    });
-    
-    document.getElementById('btnExitOut').addEventListener('click', () => {
-        switchScreen('adminMenu');
-    });
+// 6. 입고 완료 확인 화면 (inboundComplete) - 클릭/터치 시 입고 QR 인식 화면으로 복귀
+document.getElementById('inboundComplete').addEventListener('click', () => {
+    switchScreen('inboundQR');
+});
 
-    // 8. 출고 완료 확인 화면 (outboundComplete) - 클릭/터치 시 출고 QR 인식 화면으로 복귀
-    document.getElementById('outboundComplete').addEventListener('click', () => {
-        switchScreen('outboundQR');
-    });
+
+// 7. 출고 QR 인식 화면 (outboundQR)
+document.getElementById('btnStartScanOut').addEventListener('click', () => {
+    // '출고' 상태, 'scan-message-out' 영역 지정
+    startQrScanner('readerOutbound', 'outboundComplete', '출고', 'scan-message-out');
+});
+
+// '종료' 버튼 (스캐너 정지 로직 포함)
+document.getElementById('btnExitOut').addEventListener('click', () => {
+    stopQrScanner();
+    switchScreen('adminMenu');
+});
+
+// 8. 출고 완료 확인 화면 (outboundComplete) - 클릭/터치 시 출고 QR 인식 화면으로 복귀
+document.getElementById('outboundComplete').addEventListener('click', () => {
+    switchScreen('outboundQR');
+});
 
     // 9. 재고 상황 조회 화면 (stockStatus)
     document.getElementById('btnExitStock').addEventListener('click', () => {
@@ -142,14 +141,13 @@ function updateStockTable() {
     }
 }
 
-// QR 스캐너 시작 함수
-function startQrScanner(readerId, successScreenId) {
+// QR 스캐너 시작 함수 (범용적으로 수정)
+function startQrScanner(readerId, successScreenId, statusToSet, messageId) {
     if (isScannerRunning) {
         console.warn("스캐너가 이미 실행 중입니다.");
         return;
     }
     
-    // 화면에 QR 스캐너가 표시될 영역을 찾습니다.
     html5QrCode = new Html5Qrcode(readerId);
     
     // QR 스캔 성공 시 실행될 콜백 함수
@@ -160,13 +158,14 @@ function startQrScanner(readerId, successScreenId) {
         // 🚨 [임시 데이터 처리 로직]
         let containerId = decodedText.split('id=').pop(); // URL에서 ID 부분만 추출
         
-        // 3. 수거 완료 확인 화면의 정보 업데이트
-        document.querySelector('#collectComplete .info-text').textContent = 
+        // 3. 완료 확인 화면의 정보 업데이트 (수거, 입고, 출고 모두 사용)
+        document.querySelector(`#${successScreenId} .info-text`).textContent = 
             `QR 정보: ${containerId ? containerId : 'ID 인식 실패'}`;
         
         // 가상 DB 업데이트 (기존 로직 유지)
         if (containerId) {
-             stockData.push({ id: containerId, region: "세종", type: "XL", status: "수거" });
+             // 임시로 그릇 정보를 세종/XL/현재상태로 지정
+             stockData.push({ id: containerId, region: "세종", type: "XL", status: statusToSet });
         }
         
         // 완료 화면으로 전환
@@ -178,12 +177,12 @@ function startQrScanner(readerId, successScreenId) {
     html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
     .then(() => {
         isScannerRunning = true;
-        document.getElementById('scan-message').textContent = '카메라가 활성화되었습니다. QR을 중앙에 맞춰주세요.';
-        // QR 버튼을 잠시 숨김 처리 (선택 사항)
+        // [수정] 메시지 ID를 받아 해당 영역에 메시지 출력
+        document.getElementById(messageId).textContent = `카메라가 활성화되었습니다. ${statusToSet}을 위해 QR을 중앙에 맞춰주세요.`;
     })
     .catch(err => {
         isScannerRunning = false;
-        document.getElementById('scan-message').textContent = '카메라 접근에 실패했습니다. (HTTPS 필요, 권한 확인)';
+        document.getElementById(messageId).textContent = '카메라 접근에 실패했습니다. (HTTPS 필요, 권한 확인)';
         console.error("카메라 접근 실패: ", err);
     });
 }
