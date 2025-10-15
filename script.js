@@ -1,3 +1,7 @@
+// QR 코드 스캐너 인스턴스 (전역 변수)는 여기에 위치해야 합니다.
+let html5QrCode; 
+let isScannerRunning = false; // 스캐너 실행 상태 추적
+
 // --- 화면 전환 로직 ---
 
 /**
@@ -8,8 +12,6 @@ function switchScreen(targetId) {
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
     });
-    let html5QrCode; 
-let isScannerRunning = false; // 스캐너 실행 상태 추적
     document.getElementById(targetId).classList.add('active');
 }
 
