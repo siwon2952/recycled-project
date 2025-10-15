@@ -8,6 +8,8 @@ function switchScreen(targetId) {
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
     });
+    let html5QrCode; 
+let isScannerRunning = false; // 스캐너 실행 상태 추적
     document.getElementById(targetId).classList.add('active');
 }
 
@@ -31,23 +33,22 @@ document.addEventListener('DOMContentLoaded', () => {
         switchScreen('adminMenu');
     });
 
-    // 2. 수거 QR 인식 화면 (collectQR)
-    document.getElementById('btnScanCollect').addEventListener('click', () => {
-        // 실제 QR 스캔 대신, 수거 완료 처리 로직 실행
-        console.log("수거 QR 스캔 시도...");
-        // DB 업데이트 로직 (프로토타입에서는 가상으로 추가)
-        stockData.push({ id: stockData.length + 1, region: "신규", type: "미확인", status: "수거" }); 
-        
-        switchScreen('collectComplete');
+    // 2. 수거 QR 인식 화면 (collectQR) - 카메라 기능 추가
+    // '카메라 켜기/스캔 시작' 버튼
+    document.getElementById('btnStartScanCollect').addEventListener('click', () => {
+        startQrScanner('reader', 'collectComplete');
     });
-    
+
+    // '종료' 버튼 (스캐너 정지 로직 포함)
     document.getElementById('btnExitCollect').addEventListener('click', () => {
+        stopQrScanner();
         switchScreen('mainMenu');
     });
 
-    // 3. 수거 완료 확인 화면 (collectComplete) - 클릭/터치 시 수거 QR 인식 화면으로 복귀
+    // 3. 수거 완료 확인 화면 (collectComplete) - 클릭/터치 시 스캐너 재시작
     document.getElementById('collectComplete').addEventListener('click', () => {
         switchScreen('collectQR');
+        // 다음 스캔을 위해 화면이 돌아오면 스캐너 시작 버튼을 눌러야 함
     });
 
     // 4. 관리자 메뉴 화면 (adminMenu)
@@ -136,5 +137,63 @@ function updateStockTable() {
     const stockScreen = document.getElementById('stockStatus');
     if(stockScreen.classList.contains('active')) {
         stockScreen.scrollTop = 0;
+    }
+}
+
+// QR 스캐너 시작 함수
+function startQrScanner(readerId, successScreenId) {
+    if (isScannerRunning) {
+        console.warn("스캐너가 이미 실행 중입니다.");
+        return;
+    }
+    
+    // 화면에 QR 스캐너가 표시될 영역을 찾습니다.
+    html5QrCode = new Html5Qrcode(readerId);
+    
+    // QR 스캔 성공 시 실행될 콜백 함수
+    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+        stopQrScanner(); // QR 인식 성공 시 스캐너 정지
+        console.log(`QR 코드 스캔 성공: ${decodedText}`);
+
+        // 🚨 [임시 데이터 처리 로직]
+        let containerId = decodedText.split('id=').pop(); // URL에서 ID 부분만 추출
+        
+        // 3. 수거 완료 확인 화면의 정보 업데이트
+        document.querySelector('#collectComplete .info-text').textContent = 
+            `QR 정보: ${containerId ? containerId : 'ID 인식 실패'}`;
+        
+        // 가상 DB 업데이트 (기존 로직 유지)
+        if (containerId) {
+             stockData.push({ id: containerId, region: "세종", type: "XL", status: "수거" });
+        }
+        
+        // 완료 화면으로 전환
+        switchScreen(successScreenId);
+    };
+
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+    html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+    .then(() => {
+        isScannerRunning = true;
+        document.getElementById('scan-message').textContent = '카메라가 활성화되었습니다. QR을 중앙에 맞춰주세요.';
+        // QR 버튼을 잠시 숨김 처리 (선택 사항)
+    })
+    .catch(err => {
+        isScannerRunning = false;
+        document.getElementById('scan-message').textContent = '카메라 접근에 실패했습니다. (HTTPS 필요, 권한 확인)';
+        console.error("카메라 접근 실패: ", err);
+    });
+}
+
+// QR 스캐너 정지 함수
+function stopQrScanner() {
+    if (isScannerRunning && html5QrCode) {
+        html5QrCode.stop().then(ignore => {
+            isScannerRunning = false;
+            console.log("QR 스캐너 정지됨.");
+        }).catch(err => {
+            console.error("스캐너 정지 실패: ", err);
+        });
     }
 }
